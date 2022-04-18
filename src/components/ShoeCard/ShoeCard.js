@@ -31,16 +31,27 @@ const ShoeCard = ({
       ? 'new-release'
       : 'default'
 
+  const variantText = variant === 'on-sale' ? 'Sale' : variant === 'new-release' ? 'Just Released!' : null;
+
+
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
+          {variantText &&
+            <Variant style={{'--background': variant === 'on-sale' ? COLORS.primary : COLORS.secondary}}>
+              {variantText}
+            </Variant>
+          }
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <PricesWrapper>
+            <Price sale={variant === 'on-sale'}>{formatPrice(price)}</Price>
+            {variant === 'on-sale' && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
+          </PricesWrapper>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
@@ -63,6 +74,20 @@ const ImageWrapper = styled.div`
   position: relative;
 `;
 
+const Variant = styled.div`
+  position: absolute;
+  top: 12px;
+  right: -4px;
+  background: var(--background);
+  padding: 8px 10px;
+  border-radius: 2px;
+  color: ${COLORS.white};
+  font-size: 0.875rem;
+  font-weight: ${WEIGHTS.bold};
+  line-height: 1rem;
+`;
+
+
 const Image = styled.img`
   width: 100%;
   border-radius: 16px 16px 4px 4px;
@@ -70,6 +95,10 @@ const Image = styled.img`
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 `;
 
 const Name = styled.h3`
@@ -77,7 +106,10 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: ${({sale}) => sale ? COLORS.gray[700] : COLORS.gray[900]};
+  ${({sale}) => sale ? 'text-decoration: line-through': ''}
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
@@ -86,6 +118,13 @@ const ColorInfo = styled.p`
 const SalePrice = styled.span`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
+  position: absolute;
+  right: 0;
+  top: 100%;
+`;
+
+const PricesWrapper = styled.div`
+  position: relative;
 `;
 
 export default ShoeCard;
